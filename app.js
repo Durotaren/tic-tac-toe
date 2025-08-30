@@ -1,69 +1,79 @@
-let boardCells = document.querySelectorAll('.gameCube');
-let gameWon = false;
-
-const gameBoard = (function() {
-  const board = 
-  [
-    '', '', '',
-    '', '', '',
-    '', '', '',
-  ];
+const gameBoard = (function () {
+  let board = ['', '', '', '', '', '', '', '', ''];
   const getBoard = () => board;
 
-  return {board, getBoard};
+  const resetBoard = () => (board = ['', '', '', '', '', '', '', '', '']);
+
+  return { getBoard, resetBoard };
 })();
 
 function playerFactory(name, sign) {
-  return {name, sign};
-}
-
-function checkWinner(sign) {
-  if (
-        (gameBoard.board[0] === sign && gameBoard.board[4] === sign && gameBoard.board[8] === sign) ||
-        (gameBoard.board[2] === sign && gameBoard.board[4] === sign && gameBoard.board[6] === sign) ||
-        (gameBoard.board[0] === sign && gameBoard.board[1] === sign && gameBoard.board[2] === sign) ||
-        (gameBoard.board[3] === sign && gameBoard.board[4] === sign && gameBoard.board[5] === sign) ||
-        (gameBoard.board[6] === sign && gameBoard.board[7] === sign && gameBoard.board[8] === sign) ||
-        (gameBoard.board[0] === sign && gameBoard.board[3] === sign && gameBoard.board[6] === sign) ||
-        (gameBoard.board[1] === sign && gameBoard.board[4] === sign && gameBoard.board[7] === sign) ||
-        (gameBoard.board[2] === sign && gameBoard.board[5] === sign && gameBoard.board[8] === sign)
-      ) {
-      console.log(`${sign} Wins!`);
-    }
+  return { name, sign };
 }
 
 let player1 = playerFactory('Ivan', 'X');
-let player2 = playerFactory('Cveto', 'O');
+let player2 = playerFactory('Cveti', 'O');
 
-const gameState = (function() {
+const gameController = (function () {
   let currPlayer = player1;
+
   let gameWon = false;
 
-  return {currPlayer, gameWon};
+  let getCurrPlayer = () => currPlayer;
+  let getGameState = () => gameWon;
+  let switchPlayer = () =>
+    (currPlayer = currPlayer === player1 ? player2 : player1);
+
+  function checkWinner(sign) {
+    let board = gameBoard.getBoard();
+    if (
+      (board[0] === sign && board[4] === sign && board[8] === sign) ||
+      (board[2] === sign && board[4] === sign && board[6] === sign) ||
+      (board[0] === sign && board[1] === sign && board[2] === sign) ||
+      (board[3] === sign && board[4] === sign && board[5] === sign) ||
+      (board[6] === sign && board[7] === sign && board[8] === sign) ||
+      (board[0] === sign && board[3] === sign && board[6] === sign) ||
+      (board[1] === sign && board[4] === sign && board[7] === sign) ||
+      (board[2] === sign && board[5] === sign && board[8] === sign)
+    ) {
+      console.log(`${sign} Wins!`);
+      gameWon = true;
+    }
+  }
+
+  return { getCurrPlayer, getGameState, switchPlayer, checkWinner };
 })();
 
-boardCells.forEach(cell => {
-  cell.addEventListener('click', () => {
-    if (cell.textContent !== '') {
-      return;
-    };
+const displayController = (function () {
+  let boardCells = document.querySelectorAll('.gameCube');
+  let restartBtn = document.querySelector('.restartBtn');
+  let score = document.querySelector('.scorePara');
 
-    const index = event.target.dataset.index;
+  boardCells.forEach((cell) => {
+    cell.addEventListener('click', () => {
+      if (cell.textContent !== '' || gameController.getGameState()) {
+        return;
+      }
+      const index = event.target.dataset.index;
+      const player = gameController.getCurrPlayer();
+      const board = gameBoard.getBoard();
 
-    if (gameState.currPlayer === player1) {
-      cell.textContent = 'X'
-      gameBoard.board[index] = 'X'
-      checkWinner('X');
-    } else {
-      cell.textContent = 'O';
-      gameBoard.board[index] = 'O';
-      checkWinner('O');
-    }
-    if (gameState.currPlayer === player1) {
-      gameState.currPlayer = player2;
-    } else {
-      gameState.currPlayer = player1;
-    }
+      if (player === player1) {
+        cell.textContent = 'X';
+        board[index] = 'X';
+        gameController.checkWinner('X');
+      } else {
+        cell.textContent = 'O';
+        board[index] = 'O';
+        gameController.checkWinner('O');
+      }
 
-  })
-})
+      gameController.switchPlayer();
+    });
+  });
+
+  restartBtn.addEventListener('click', () => {
+    gameBoard.resetBoard();
+    boardCells.forEach((cell) => (cell.textContent = ''));
+  });
+})();
