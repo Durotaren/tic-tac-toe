@@ -8,6 +8,22 @@
   </head>
   <body>
     <div class="mainContainer">
+      <div id="playerModal" class="modal">
+        <div class="modalContent">
+          <h1>Enter your name and choose a sign:</h1>
+          <label for="playerName"></label>
+          <input required type="text" id="playerName" />
+          <label for="playerSign"></label>
+          <select id="playerSign">
+            <option value="X">X</option>
+            <option value="O">O</option>
+          </select>
+          <div>
+            <button class="startGameBtn">Start Game!</button>
+          </div>
+        </div>
+      </div>
+      <div id="winnerOverlay"></div>
       <div class="headingContainer">
         <h1>Tic Tac Toe</h1>
       </div>
@@ -27,7 +43,7 @@
           <button class="restartBtn">Restart</button>
         </div>
         <div>
-          <p class="scorePara">Score:</p>
+          <p class="scorePara">Score: 0 - 0</p>
         </div>
       </div>
     </div>
